@@ -15,3 +15,11 @@ export function posthook-pgrest-create-plx (opts, plx)
         tokens JSON
     );
     """
+
+export function posthook-pgrest-create-app (opts, app)
+  app.use express.cookieParser!
+  app.use express.bodyParser!
+  app.use express.methodOverride!
+  app.use express.session secret: 'test'
+  app.use passport.initialize!
+  app.use passport.session!

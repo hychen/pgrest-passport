@@ -1,5 +1,6 @@
 require! pgrest
 require! passport
+require! express
 
 export function posthook-pgrest-create-plx (opts, plx)
     <- plx.query """

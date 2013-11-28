@@ -21,6 +21,7 @@ engines: {node: '*'}
 dependencies:
   trycatch: \1.0.x
   passport: \0.1.x
+  express: \*
 devDependencies:
   mocha: \*
   supertest: \0.7.x

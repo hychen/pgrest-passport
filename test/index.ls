@@ -24,3 +24,11 @@ describe 'pgrest-assport', ->
       """
       res.0.count.should.eq \1
       done!
+  describe 'posthook-pgrest-create-app', -> ``it``
+    .. 'should create a users table.', (done) ->
+      used = []
+      app = do
+        use: -> used.push it
+      pgrest.try-invoke! [pgrest-passport], \posthook-pgrest-create-app, null, app
+      used.length.should.eq 6
+      done!

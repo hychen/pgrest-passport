@@ -2,7 +2,7 @@
 author:
   name: ['Chen Hsin-Yi']
   email: 'ossug.hychen@gmail.com'
-name: 'pgrest'
+name: 'pgrest-passport'
 description: 'pgrest plugin for passportjs'
 version: '0.0.1'
 main: \lib/index.js
@@ -26,6 +26,8 @@ devDependencies:
   supertest: \0.7.x
   chai: \*
   LiveScript: \1.1.x
+peerDependencies:
+  pgrest: \*
 optionalDependencies:
   'passport-facebook': \1.0.x
   'passport-twitter': \1.0.x

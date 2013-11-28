@@ -2,6 +2,18 @@ require! pgrest
 require! passport
 require! express
 
+default_cb_profile = (req, res) ->
+  if req.isAuthenticated!
+    res.send req.user
+  else
+    res.send 403
+
+default_cb_loggedin = (req, res) ->
+  if req.pgparam.auth?
+    res.send true
+  else
+    res.send false
+
 default_cb_logout = (req, res) ->
   console.log "user logout"
   req.logout!
@@ -64,9 +76,9 @@ export function posthook-pgrest-create-app (opts, app)
 
 export function prehook-pgrest-mount-default (opts, plx, app, middleware)
   middleware.push pgparam-passport
-  app.get "/loggedin", middleware, (req, res) ->
-            if req.pgparam.auth? then res.send true else res.send false
+  app.get "/loggedin", middleware, default_cb_loggedin
   app.get "/logout", middleware, default_cb_logout
+  app.get "/me", middleware, default_cb_profile
 
   for provider_name in opts.auth.plugins
     provider_cfg = opts.auth.providers_settings[provider_name]

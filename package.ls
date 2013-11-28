@@ -6,6 +6,8 @@ name: 'pgrest-passport'
 description: 'pgrest plugin for passportjs'
 version: '0.0.1'
 main: \lib/index.js
+bin:
+  pgrest-passport: 'bin/cmd.js'
 repository:
   type: 'git'
   url: 'git://github.com/hychen/pgrest-passport.git'
@@ -15,6 +17,8 @@ scripts:
   """
   prepublish: """
     lsc -cj package.ls &&
+    lsc -bpc bin/cmd.ls > bin/cmd.js &&
+    chmod 755 bin/cmd.js &&
     lsc -bc -o lib src
   """
 engines: {node: '*'}

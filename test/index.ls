@@ -25,7 +25,7 @@ describe 'pgrest-assport', ->
       res.0.count.should.eq \1
       done!
   describe 'posthook-pgrest-create-app', -> ``it``
-    .. 'should create a users table.', (done) ->
+    .. 'should configure express to use passportjs.', (done) ->
       used = []
       app = do
         use: -> used.push it

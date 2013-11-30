@@ -19,17 +19,17 @@ default_cb_logout = (req, res) ->
   req.logout!
   res.redirect opts.auth.logout_redirect
 
-default_cb_after_auth = (token, tokenSecret, profile, done) ->
+default_cb_after_auth = (plx, token, tokenSecret, profile, done) ->
   user = do
-    provider_name: profile.provider
-    provider_id: profile.id
+    authorization_provider: profile.provider
+    authorization_id: profile.id
     username: profile.username
     name: profile.name
     emails: profile.emails
     photos: profile.photos
-  console.log "user #{user.username} authzed by #{user.provider_name}.#{user.provider_id}"
+  console.log "user #{user.username} authzed by #{user.authorization_provider}.#{user.authorization_id}"
   #@FIXME: need to merge multiple authoziation profiles
-  param = [collection: \users, q:{provider_id:user.provider_id, provider_name:user.provider_name}]
+  param = [collection: \users, q:{authorization_provider:user.authorization_provider, authorization_id:user.authorization_id}]
   [pgrest_select:res] <- plx.query "select pgrest_select($1)", param
   if res.paging.count == 0
     [pgrest_insert:res] <- plx.query "select pgrest_insert($1)", [collection: \users, $: [user]]
@@ -55,8 +55,8 @@ export function posthook-pgrest-create-plx (opts, plx)
     <- plx.query """
       CREATE TABLE IF NOT EXISTS users (
         _id SERIAL UNIQUE,
-        provider_name TEXT NOT NULL,
-        provider_id TEXT NOT NULL,
+        authorization_provider TEXT NOT NULL,
+        authorization_id TEXT NOT NULL,
         username TEXT,
         name JSON,
         display_name TEXT,

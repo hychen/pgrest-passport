@@ -11,7 +11,7 @@ pgparam-passport = (req, res, next) ->
     req.pgparam = {}
   next!
 
-export function boot (opts)
+export function initialize (opts)
   passport.serializeUser (user, done) -> done null, user
   passport.deserializeUser (id, done) -> done null, id
 

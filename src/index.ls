@@ -2,42 +2,6 @@ require! pgrest
 require! passport
 require! express
 
-default_cb_profile = (req, res) ->
-  if req.isAuthenticated!
-    res.send req.user
-  else
-    res.send 403
-
-default_cb_loggedin = (req, res) ->
-  if req.pgparam.auth?
-    res.send true
-  else
-    res.send false
-
-default_cb_logout = (req, res) ->
-  console.log "user logout"
-  req.logout!
-  res.redirect opts.auth.logout_redirect
-
-default_cb_after_auth = (plx, token, tokenSecret, profile, done) ->
-  user = do
-    authorization_provider: profile.provider
-    authorization_id: profile.id
-    username: profile.username
-    name: profile.name
-    emails: profile.emails
-    photos: profile.photos
-  console.log "user #{user.username} authzed by #{user.authorization_provider}.#{user.authorization_id}"
-  #@FIXME: need to merge multiple authoziation profiles
-  param = [collection: \users, q:{authorization_provider:user.authorization_provider, authorization_id:user.authorization_id}]
-  [pgrest_select:res] <- plx.query "select pgrest_select($1)", param
-  if res.paging.count == 0
-    [pgrest_insert:res] <- plx.query "select pgrest_insert($1)", [collection: \users, $: [user]]
-    [pgrest_select:res] <- plx.query "select pgrest_select($1)", param
-  user.auth_id = res.entries[0]['_id']
-  console.log user
-  done null, user
-
 pgparam-passport = (req, res, next) ->
   if req.isAuthenticated!
     console.log "#{req.path} user is authzed. init db sesion"
@@ -75,6 +39,38 @@ export function posthook-express-create-app (opts, app)
   app.use passport.session!
 
 export function prehook-pgrest-mount-default (opts, plx, app, middleware)
+  default_cb_profile = (req, res) ->
+    if req.isAuthenticated!
+      res.send req.user
+    else
+      res.send 403
+  default_cb_loggedin = (req, res) ->
+    if req.pgparam.auth?
+      res.send true
+    else
+      res.send false
+  default_cb_logout = (req, res) ->
+    console.log "user logout"
+    req.logout!
+    res.redirect opts.auth.logout_redirect
+  default_cb_after_auth = (token, tokenSecret, profile, done) ->
+    user = do
+      authorization_provider: profile.provider
+      authorization_id: profile.id
+      username: profile.username
+      name: profile.name
+      emails: profile.emails
+      photos: profile.photos
+    console.log "user #{user.username} authzed by #{user.authorization_provider}.#{user.authorization_id}"
+    #@FIXME: need to merge multiple authoziation profiles
+    param = [collection: \users, q:{authorization_provider:user.authorization_provider, authorization_id:user.authorization_id}]
+    [pgrest_select:res] <- plx.query "select pgrest_select($1)", param
+    if res.paging.count == 0
+      [pgrest_insert:res] <- plx.query "select pgrest_insert($1)", [collection: \users, $: [user]]
+      [pgrest_select:res] <- plx.query "select pgrest_select($1)", param
+    user.auth_id = res.entries[0]['_id']
+    console.log user
+    done null, user
   middleware.push pgparam-passport
   app.get "/loggedin", middleware, default_cb_loggedin
   app.get "/logout", middleware, default_cb_logout

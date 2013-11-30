@@ -66,7 +66,7 @@ export function posthook-pgrest-create-plx (opts, plx)
     );
     """
 
-export function posthook-pgrest-create-app (opts, app)
+export function posthook-express-create-app (opts, app)
   app.use express.cookieParser!
   app.use express.bodyParser!
   app.use express.methodOverride!

@@ -3,7 +3,7 @@ require! passport
 require! express
 
 DEFAULT_SETTINGS = do
-  enable: true
+  enable: false
   success_redirect: '/me'
   logout_redirect: '/'
   plugins: []

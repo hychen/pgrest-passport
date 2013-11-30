@@ -2,6 +2,22 @@ require! pgrest
 require! passport
 require! express
 
+DEFAULT_SETTINGS = do
+  enable: true
+  success_redirect: '/me'
+  logout_redirect: '/'
+  plugins: []
+  providers_settings:
+    facebook:
+      clientID: null
+      clientSecret: null
+    twitter:
+      consumerKey: null
+      consumerSecret: null
+    google:
+      consumerKey: null
+      consumerSecret: null
+
 pgparam-passport = (req, res, next) ->
   if req.isAuthenticated!
     console.log "#{req.path} user is authzed. init db sesion"
@@ -11,8 +27,11 @@ pgparam-passport = (req, res, next) ->
     req.pgparam = {}
   next!
 
+export function process-opts (opts)
+  opts.auth = opts.argv.auth or opts.cfg.auth or DEFAULT_SETTINGS
+
 export function isactive (opts)
-  true
+  opts.auth.enable == true
 
 export function initialize (opts)
   passport.serializeUser (user, done) -> done null, user

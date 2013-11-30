@@ -37,7 +37,7 @@ export function initialize (opts)
   passport.serializeUser (user, done) -> done null, user
   passport.deserializeUser (id, done) -> done null, id
 
-export function posthook-pgrest-create-plx (opts, plx)
+export function posthook-cli-create-plx (opts, plx)
     <- plx.query """
       CREATE TABLE IF NOT EXISTS users (
         _id SERIAL UNIQUE,
@@ -52,7 +52,7 @@ export function posthook-pgrest-create-plx (opts, plx)
     );
     """
 
-export function posthook-express-create-app (opts, app)
+export function posthook-cli-create-app (opts, app)
   app.use express.cookieParser!
   app.use express.bodyParser!
   app.use express.methodOverride!
@@ -60,7 +60,7 @@ export function posthook-express-create-app (opts, app)
   app.use passport.initialize!
   app.use passport.session!
 
-export function prehook-pgrest-mount-default (opts, plx, app, middleware)
+export function prehook-cli-mount-default (opts, plx, app, middleware)
   default_cb_profile = (req, res) ->
     if req.isAuthenticated!
       res.send req.user

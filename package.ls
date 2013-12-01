@@ -29,7 +29,7 @@ devDependencies:
   mocha: \1.14.x
   supertest: \0.7.x
   chai: \1.8.x
-  LiveScript: \1.1.x
+  LiveScript: \1.2.x
   pgrest: \0.1.x
 peerDependencies:
   pgrest: \0.1.x

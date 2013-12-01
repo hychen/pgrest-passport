@@ -30,9 +30,9 @@ devDependencies:
   supertest: \0.7.x
   chai: \*
   LiveScript: \1.1.x
-  pgrest: \*
+  pgrest: \0.1.x
 peerDependencies:
-  pgrest: \*
+  pgrest: \0.1.x
 optionalDependencies:
   'passport-facebook': \1.0.x
   'passport-twitter': \1.0.x

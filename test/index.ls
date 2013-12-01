@@ -5,7 +5,7 @@ expect = (require \chai).expect
 require! pgrest
 var pgrest-passport, plx
 
-describe 'pgrest-assport', ->
+describe 'pgrest-passport', ->
   describe 'posthook-cli-create-plx', -> ``it``
     beforeEach (done) ->
       pgrest-passport := require \..

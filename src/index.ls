@@ -89,7 +89,7 @@ export function prehook-cli-mount-default (opts, plx, app, middleware)
     [pgrest_select:res] <- plx.query "select pgrest_select($1)", param
     if res.paging.count == 0
       [pgrest_insert:res] <- plx.query "select pgrest_insert($1)", [collection: \users, $: [user]]
-      [pgrest_select:res] <- plx.query "select pgrest_select($1)", param
+    [pgrest_select:res] <- plx.query "select pgrest_select($1)", param
     user.auth_id = res.entries[0]['_id']
     console.log user
     done null, user

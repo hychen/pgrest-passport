@@ -4,7 +4,7 @@ author:
   email: 'ossug.hychen@gmail.com'
 name: 'pgrest-passport'
 description: 'pgrest plugin for passportjs'
-version: '0.0.2'
+version: '0.0.2.1'
 main: \lib/index.js
 repository:
   type: 'git'

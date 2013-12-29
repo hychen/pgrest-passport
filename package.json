@@ -7,7 +7,7 @@
   },
   "name": "pgrest-passport",
   "description": "pgrest plugin for passportjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "lib/index.js",
   "repository": {
     "type": "git",

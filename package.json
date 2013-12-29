@@ -9,16 +9,13 @@
   "description": "pgrest plugin for passportjs",
   "version": "0.0.1",
   "main": "lib/index.js",
-  "bin": {
-    "pgrestPassport": "bin/cmd.js"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/hychen/pgrest-passport.git"
   },
   "scripts": {
     "test": "mocha",
-    "prepublish": "lsc -cj package.ls &&\nlsc -bpc bin/cmd.ls > bin/cmd.js &&\nchmod 755 bin/cmd.js &&\nlsc -bc -o lib src"
+    "prepublish": "lsc -cj package.ls &&\nlsc -bc -o lib src"
   },
   "engines": {
     "node": "*"

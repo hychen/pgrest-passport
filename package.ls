@@ -17,6 +17,9 @@ scripts:
     lsc -cj package.ls &&
     lsc -bc -o lib src
   """
+  postinstall: """
+ 	if [ ! -e ./lib ]; then npm i LiveScript; lsc -bc -o lib src; fi
+  """
 engines: {node: '*'}
 dependencies:
   trycatch: \1.0.x

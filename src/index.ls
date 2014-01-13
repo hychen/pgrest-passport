@@ -51,7 +51,7 @@ export function posthook-cli-create-plx (opts, plx)
         tokens JSON
     );
     """
-
+    <-pgrest.bootstrap plx, \pgrestpassport require.resolve \../package.json
 export function posthook-cli-create-app (opts, app)
   app.use express.cookieParser!
   app.use express.bodyParser!
@@ -116,3 +116,10 @@ export function prehook-cli-mount-default (opts, plx, app, middleware)
             successRedirect: opts.auth.success_redirect or '/'
             failureRedirect: "/auth/#{provider_name}"
     app.get "/auth/#{provider_name}/callback", _auth
+
+export function pgrest_getauth
+    throw "logged out" unless plv8x.auth
+    plv8x.auth.auth_id
+
+pgrest_getauth.$plv8x = '():int'
+pgrest_getauth.$bootstrap = true

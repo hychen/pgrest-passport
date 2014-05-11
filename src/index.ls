@@ -3,6 +3,7 @@ require! passport
 require! express
 
 DEFAULT_SETTINGS = do
+  jwt_secret: 'wtfwtfbacwtf'
   enable: false
   success_redirect: '/me'
   logout_redirect: '/'
@@ -38,27 +39,26 @@ export function initialize (opts)
   passport.deserializeUser (id, done) -> done null, id
 
 export function posthook-cli-create-plx (opts, plx)
-    <- plx.query """
-      CREATE TABLE IF NOT EXISTS users (
-        _id SERIAL UNIQUE,
-        authorization_provider TEXT NOT NULL,
-        authorization_id TEXT NOT NULL,
-        username TEXT,
-        name JSON,
-        display_name TEXT,
-        emails JSON,
-        photos JSON,
-        tokens JSON
+  <- plx.query """
+    CREATE EXTENSION if not exists "uuid-ossp";
+    CREATE TABLE IF NOT EXISTS users (
+      _id uuid UNIQUE default(uuid_generate_v4()),
+      auth_provider text[],
+      username text UNIQUE,
+      profile JSON,
+      display_name TEXT,
+      tokens JSON
     );
-    """
-    <-pgrest.bootstrap plx, \pgrestpassport require.resolve \../package.json
+  """
+#  plx.query """
+#   create index users_auth_provider on users using gin (auth_provider);
+# """, ->, -> console.log \meh
+  <- pgrest.bootstrap plx, "pgrest-passport" require.resolve \../package.json
+
 export function posthook-cli-create-app (opts, app)
-  app.use express.cookieParser!
   app.use express.bodyParser!
   app.use express.methodOverride!
-  app.use express.session secret: 'test'
   app.use passport.initialize!
-  app.use passport.session!
 
 export function prehook-cli-mount-default (opts, plx, app, middleware)
   default_cb_profile = (req, res) ->
@@ -76,24 +76,23 @@ export function prehook-cli-mount-default (opts, plx, app, middleware)
     req.logout!
     res.redirect opts.auth.logout_redirect
   default_cb_after_auth = (token, tokenSecret, profile, done) ->
+    console.log \aftercb token, tokenSecret
     user = do
-      authorization_provider: profile.provider
-      authorization_id: profile.id
-      username: profile.username
-      name: profile.name
-      emails: profile.emails
-      photos: profile.photos
-    console.log "user #{user.username} authzed by #{user.authorization_provider}.#{user.authorization_id}"
-    #@FIXME: need to merge multiple authoziation profiles
-    param = [collection: \users, q:{authorization_provider:user.authorization_provider, authorization_id:user.authorization_id}]
+      auth_provider: ["#{profile.provider}:#{profile.id}"]
+      profile: profile
+    console.log "user #{user.username} authn as #{user.auth_provider.0}"
+    param = [collection: \users, q:{auth_provider: { '$contains': user.auth_provider.0 }}]
     [pgrest_select:res] <- plx.query "select pgrest_select($1)", param
     if res.paging.count == 0
       [pgrest_insert:res] <- plx.query "select pgrest_insert($1)", [collection: \users, $: [user]]
     [pgrest_select:res] <- plx.query "select pgrest_select($1)", param
-    user.auth_id = res.entries[0]['_id']
+    user.user_id = res.entries[0]['_id']
     console.log user
     done null, user
+  express-jwt = require 'express-jwt'
+  middleware.push express-jwt secret: opts.auth.jwt_secret
   middleware.push pgparam-passport
+
   app.get "/loggedin", middleware, default_cb_loggedin
   app.get "/logout", middleware, default_cb_logout
   app.get "/me", middleware, default_cb_profile
@@ -113,9 +112,13 @@ export function prehook-cli-mount-default (opts, plx, app, middleware)
     # register auth endpoint
     app.get "/auth/#{provider_name}", (passport.authenticate "#{provider_name}", provider_cfg.scope)
     _auth = passport.authenticate "#{provider_name}", do
-            successRedirect: opts.auth.success_redirect or '/'
-            failureRedirect: "/auth/#{provider_name}"
-    app.get "/auth/#{provider_name}/callback", _auth
+      failureRedirect: "/auth/#{provider_name}"
+    jwt = require 'jsonwebtoken'
+
+    app.get "/auth/#{provider_name}/callback", _auth, ({user}:req, res) ->
+      console.log \authcb, req.headers.accept
+      token = jwt.sign {user.user_id}, opts.auth.jwt_secret, expiresInMinutes: 60*5
+      res.redirect '/me#' + token
 
 export function pgrest_getauth
     throw "logged out" unless plv8x.auth

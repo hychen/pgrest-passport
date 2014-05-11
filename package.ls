@@ -24,6 +24,8 @@ engines: {node: '*'}
 dependencies:
   trycatch: \1.0.x
   passport: \0.1.x
+  'express-jwt': \0.2.x
+  'jsonwebtoken': \0.4.x
 devDependencies:
   mocha: \1.14.x
   supertest: \0.7.x
